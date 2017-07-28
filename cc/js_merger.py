@@ -9,7 +9,7 @@
 
 import sys
 import re
-import parse_cc_graph
+from . import parse_cc_graph
 
 
 # combine pre, scc and m into nodeState
@@ -30,7 +30,7 @@ def calc_scc (g):
       while nsw[1] < rootsStack[-1]:
         rootsStack.pop()
 
-  for v in g.keys():
+  for v in list(g.keys()):
     if not v in nodeState:
       controlStack = [v]
 
@@ -74,7 +74,7 @@ def calc_scc (g):
 
   # convert nodeState to a merge map
   m = {}
-  for n, ns in nodeState.iteritems():
+  for n, ns in nodeState.items():
     assert(not ns[0])
     mergeTo = ns[1]
     if not mergeTo in m:
@@ -87,11 +87,11 @@ def calc_scc (g):
 # convert to a single graph, eliminate non-GCed nodes
 def convertGraph (gm, ga):
   g = {}
-  for src, dsts in gm.iteritems():
+  for src, dsts in gm.items():
     if not src in ga.gcNodes:
       continue
     d = set([])
-    for dst, k in dsts.iteritems():
+    for dst, k in dsts.items():
       if dst in ga.gcNodes:
         d.add(dst)
     g[src] = d
@@ -118,24 +118,24 @@ m = calc_scc(g)
 
 PrintLength = False
 
-for x, l in m.iteritems():
+for x, l in m.items():
   if len(l) <= 1:
     continue
   if PrintLength:
-    print '{0:>6}'.format(len(l)),
-  print x,
+    print('{0:>6}'.format(len(l)), end=' ')
+  print(x, end=' ')
   if not PrintLength:
     for y in l:
-      print y,
-  print
+      print(y, end=' ')
+  print()
 
 
 if False:
   counts = {}
 
-  for x, li in m.iteritems():
+  for x, li in m.items():
     l = len(li)
     counts[l] = counts.get(l, 0) + 1
 
-  print counts
+  print(counts)
 

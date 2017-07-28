@@ -9,7 +9,7 @@
 
 import sys
 import re
-import parse_cc_graph
+from . import parse_cc_graph
 
 
 nodePatt = re.compile ('([a-zA-Z0-9]+) \[(?:rc=[0-9]+|gc(?:.marked)?)\] (.*)$')
@@ -38,7 +38,7 @@ def parseGraph (f):
         if (not firstNode):
           numDups[currDups] = numDups.get(currDups, 0) + 1
           if currDups > 0:
-            print currDups, currNode, currLabel
+            print(currDups, currNode, currLabel)
         currNode = nm.group(1)
         currLabel = nm.group(2)
         firstNode = False
@@ -47,22 +47,22 @@ def parseGraph (f):
 
       elif l == '==========\n':
         if currDups > 0:
-            print currDups, currNode, currLabel
+            print(currDups, currNode, currLabel)
         numDups[currDups] = numDups.get(currDups, 0) + 1
         break
       else:
-        print 'Error: Unknown line:', l[:-1]
+        print('Error: Unknown line:', l[:-1])
 
   f.close()
 
-  print numDups
+  print(numDups)
 
 
 def parseCCEdgeFile (fname):
   try:
     f = open(fname, 'r')
   except:
-    print 'Error opening file', fname
+    print('Error opening file', fname)
     exit(-1)
 
   pg = parseGraph(f)
@@ -70,7 +70,7 @@ def parseCCEdgeFile (fname):
 
 
 if len(sys.argv) < 2:
-  print 'Not enough arguments.'
+  print('Not enough arguments.')
   exit()
 
 parseCCEdgeFile(sys.argv[1])

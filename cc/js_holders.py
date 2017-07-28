@@ -8,7 +8,7 @@
 
 import sys
 from collections import namedtuple
-import parse_cc_graph
+from . import parse_cc_graph
 from optparse import OptionParser
 
 
@@ -34,7 +34,7 @@ parser.add_option('-m', '--min',
 options, args = parser.parse_args()
 
 if len(args) != 1:
-  print 'Expected one argument.'
+  print('Expected one argument.')
   exit(0)
 
 
@@ -68,7 +68,7 @@ def find_js_holders(g, ga):
   else:
     js_holders = set([])
 
-  for src, dsts in g.iteritems():
+  for src, dsts in g.items():
     if src in ga.rcNodes:
       for d in dsts:
         if d in ga.gcNodes:
@@ -96,12 +96,12 @@ def load_graph(fname):
 holders = find_js_holders(g, ga)
 
 if not options.individual:
-  for name, count in holders.iteritems():
+  for name, count in holders.items():
     if count >= options.min_display:
       sys.stdout.write('%(num)8d %(label)s\n' % {'num':count, 'label':name})
 else:
   for addr in holders:
-    print ga.nodeLabels[addr], '\t', addr
+    print(ga.nodeLabels[addr], '\t', addr)
 
 
 

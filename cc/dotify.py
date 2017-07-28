@@ -7,7 +7,7 @@
 import sys
 import re
 from collections import namedtuple
-import parse_cc_graph
+from . import parse_cc_graph
 from optparse import OptionParser
 
 
@@ -107,7 +107,7 @@ options, args = parser.parse_args()
 
 
 if len(sys.argv) < 2:
-  print 'Not enough arguments.  Run with --help for help.'
+  print('Not enough arguments.  Run with --help for help.')
   exit()
 
 
@@ -157,7 +157,7 @@ DrawAttribs = namedtuple('DrawAttribs', 'edgeLabels nodeLabels rcNodes gcNodes r
 # compute set of source and target nodes
 def graph_nodes (g):
   nodes = set([])
-  for src, edges in g.iteritems():
+  for src, edges in g.items():
     nodes |= set([src])
     nodes |= edges
   return nodes
@@ -170,7 +170,7 @@ def graph_counts (g):
   num_edges = 0
   srcs = set([])
   dsts = set([])
-  for src, edges in g.iteritems():
+  for src, edges in g.items():
     num_edges += len(edges)
     if len(edges) != 0:
       srcs |= set([src])
@@ -186,7 +186,7 @@ def get_rank_0 (g):
 
 def get_rank_k (g, kprev):
   s = set([])
-  for src, edges in g.iteritems():
+  for src, edges in g.items():
     all_prev = True
     for e in edges:
       if not e in kprev:
@@ -231,7 +231,7 @@ def compute_acyclic (g, k, ga):
   #  else:
   #    total2 += c
 
-  print 'zero covered:', total1, (100 * total1 / (total1 + total2)), '%'
+  print('zero covered:', total1, (100 * total1 / (total1 + total2)), '%')
 
 
 # compute and print out acyclic nodes, but separate ranks
@@ -254,7 +254,7 @@ def compute_acyclic_sep (g, k):
 
 def remove_nodes (g, s):
   ng = {}
-  for src, edges in g.iteritems():
+  for src, edges in g.items():
     if not src in s:
       ng[src] = edges - s
   return ng
@@ -271,7 +271,7 @@ def set_select (s):
 def calc_tiny_loops (g, s):
   counts = computeRefCounts(g)
   tiny_mems = set([])
-  for n, k in counts.items():
+  for n, k in list(counts.items()):
     if (not n in s) and k == 1 and n in g and len(g[n]) == 1:
       dst = set_select(g[n])
       if dst in g and n in g[dst]:
@@ -283,7 +283,7 @@ def calc_tiny_loops (g, s):
 # Generate inverse of graph: if a points to b in the graph, then in the inverse b points to a.
 def graph_inverse (g):
   ng = {}
-  for x, edges in g.iteritems():
+  for x, edges in g.items():
     for e in edges:
       s = ng.pop(e, set([]))
       s |= set([x])
@@ -309,10 +309,10 @@ def calc_dups (g, ga):
     eq_nodes[k] = s | set([x])
 
   dups = set([])
-  for s in eq_nodes.values():
+  for s in list(eq_nodes.values()):
     dups |= s - set([set_select(s)])
 
-  print len(dups), '/', len(gn), 'duplicate nodes (', (100 * len(dups) / len(gn)), '%)'
+  print(len(dups), '/', len(gn), 'duplicate nodes (', (100 * len(dups) / len(gn)), '%)')
 
   return dups
 
@@ -346,15 +346,15 @@ def calc_acyc_dfs (g):
   nodes = []
   ng = {}
   has_children = {}
-  for x in g.keys():
+  for x in list(g.keys()):
     calc_acyc_dfs_rec (g, x, nodes, ng, has_children)
 
   pruned = set([])
-  for x, hc in has_children.iteritems():
+  for x, hc in has_children.items():
     if not hc:
       pruned |= set([x])
 
-  print 'Found', len(pruned), ' acyclic nodes.'
+  print('Found', len(pruned), ' acyclic nodes.')
   return pruned
 
 
@@ -389,15 +389,15 @@ def calc_acyc_dfs2 (g):
   edges = []
   ng = {}
   has_children = {}
-  for x in g.keys():
+  for x in list(g.keys()):
     calc_acyc_dfs_rec2 (g, x, edges, ng, has_children)
   assert (edges == [])
   pruned = set([])
-  for x, hc in has_children.iteritems():
+  for x, hc in has_children.items():
     if not hc:
       pruned |= set([x])
 
-  print 'Found', len(pruned), 'acyclic nodes.'
+  print('Found', len(pruned), 'acyclic nodes.')
   return pruned
 
 
@@ -447,7 +447,7 @@ def one_parent_rc_nodes (g, ga):
   # external refs.
 
   s = set([])
-  for x in g.keys():
+  for x in list(g.keys()):
     if x in rc and rc[x] == 1 and not x in ga.black_gced and not x in ga.roots:
       s |= set([x])
   return s
@@ -458,7 +458,7 @@ def calc_acyc_dfs3 (g, ga):
   has_children = {}
   ch = one_parent_rc_nodes(g, ga)
 
-  for x in g.keys():
+  for x in list(g.keys()):
     calc_acyc_dfs_rec3 (g, ch, x, edges, ng, has_children)
     # commit any remaining edges
     if len(edges) != 0:
@@ -466,11 +466,11 @@ def calc_acyc_dfs3 (g, ga):
       commit_edges(ng, edges, x, len(edges))
 
   pruned = set([])
-  for x, hc in has_children.iteritems():
+  for x, hc in has_children.items():
     if not hc:
       pruned |= set([x])
 
-  print 'Found', len(pruned), 'acyclic and chained nodes.'
+  print('Found', len(pruned), 'acyclic and chained nodes.')
   return pruned
 
 
@@ -547,7 +547,7 @@ def merge_map_lookup (m, x):
 
 def calc_loopynodes (m):
   loopynodes = set([])
-  for x in m.keys():
+  for x in list(m.keys()):
     if merge_map_lookup(m, x) != x:
       loopynodes.add(x)
   return loopynodes
@@ -556,7 +556,7 @@ def calc_loopynodes (m):
 
 def merge_nodes (g):
   ng = {}
-  for x, edges in g.iteritems():
+  for x, edges in g.items():
     x2 = merge_map_lookup(m, x)
 
     # if the node being merged away is a root, make the survivor a root
@@ -608,12 +608,12 @@ def merginator(g, ga):
     len(loopynodes), gOrigLen, 100 * len(loopynodes) / gOrigLen))
 
   if False:
-    print '(marking)'
+    print('(marking)')
     ga = ga._replace(shadies = loopynodes)
   else:
-    print 'EXPERIMENTAL AND WRONG (merging nodes)'
+    print('EXPERIMENTAL AND WRONG (merging nodes)')
     ng = {}
-    for x, edges in g.iteritems():
+    for x, edges in g.items():
       x2 = merge_map_lookup(m, x)
 
       # ideally, if node being merged away is a root, should make the
@@ -670,7 +670,7 @@ def calc_scc1 (g):
     return C
 
   C = 0
-  for v in g.keys():
+  for v in list(g.keys()):
     if not v in pre:
       C = dfs(v, C)
 
@@ -678,25 +678,25 @@ def calc_scc1 (g):
 
 
 def check_scc_map (g, ga, m):
-  print 'Checking scc results:',
+  print('Checking scc results:', end=' ')
   sccs = calc_scc1(g)
   fwdMap = {}
 
-  for x, v1 in sccs.iteritems():
+  for x, v1 in sccs.items():
     if v1 in fwdMap:
       if fwdMap[v1] != m[x]:
-        print 'WRONG!'
+        print('WRONG!')
         exit(-1)
     else:
       fwdMap[v1] = m[x]
 
-  assert(len(fwdMap.keys()) == len(fwdMap.values()))
+  assert(len(list(fwdMap.keys())) == len(list(fwdMap.values())))
 
-  print 'ok.'
+  print('ok.')
 
   # take a census of the non-trivial SCCs
   s = {}
-  for x, v in m.iteritems():
+  for x, v in m.items():
     z = s.pop(v, set([]))
     assert(not x in z)
     z.add(x)
@@ -714,7 +714,7 @@ def check_scc_map (g, ga, m):
 
   mixedSCC = []
 
-  for gr in s.values():
+  for gr in list(s.values()):
     if len(gr) == 1:
       continue
     pureGC = True
@@ -754,10 +754,10 @@ def check_scc_map (g, ga, m):
       elif x in ga.black_gced:
         sccsum['gc'] += 1
       else:
-        print 'Did not expect garbage in a mixed SCC.'
+        print('Did not expect garbage in a mixed SCC.')
         exit(-1)
     total = sccsum['gc'] + sccsum['rc']
-    print (100 * sccsum['gc'] / total), '% out of', total, '((rc=', sccsum['rc']
+    print((100 * sccsum['gc'] / total), '% out of', total, '((rc=', sccsum['rc'])
 
 
 
@@ -779,7 +779,7 @@ def calc_scc2 (g, ga):
       while pre[v] < pre[rootsStack[-1]]:
         rootsStack.pop()
 
-  for v in g.keys():
+  for v in list(g.keys()):
     if not v in pre:
       controlStack = [v]
 
@@ -831,10 +831,10 @@ def calc_scc2 (g, ga):
               else:
                 controlStack.append(w)
 
-  print 'Grandchild analysis'
-  print '  unvisited grandchildren:', unvisitedGrandchildren
-  print '  open grandchildren', openGrandchildren
-  print '  closed grandchildren', closedGrandchildren
+  print('Grandchild analysis')
+  print('  unvisited grandchildren:', unvisitedGrandchildren)
+  print('  open grandchildren', openGrandchildren)
+  print('  closed grandchildren', closedGrandchildren)
 
   return m
 
@@ -853,7 +853,7 @@ def calc_scc3 (g, ga):
       while pre[v] < rootsStack[-1]:
         rootsStack.pop()
 
-  for v in g.keys():
+  for v in list(g.keys()):
     if not v in pre:
       controlStack = [v]
 
@@ -917,7 +917,7 @@ def calc_scc (g, ga):
       while nsw[1] < rootsStack[-1]:
         rootsStack.pop()
 
-  for v in g.keys():
+  for v in list(g.keys()):
     if not v in nodeState:
       controlStack = [v]
 
@@ -961,7 +961,7 @@ def calc_scc (g, ga):
 
   # convert nodeState to a merge map
   m = {}
-  for n, ns in nodeState.iteritems():
+  for n, ns in nodeState.items():
     assert(not ns[0])
     m[n] = ns[1]
 
@@ -1144,7 +1144,7 @@ def calc_scc_merge (g, ga):
     # else:
     #   ng[newv].rc = newRC - selfEdges
 
-  for v in g.keys():
+  for v in list(g.keys()):
     if not v in nodeState:
       controlStack = [v]
 
@@ -1199,18 +1199,18 @@ def calc_scc_merge (g, ga):
 def split_graph (g):
   m = {}
 
-  for src, edges in g.iteritems():
+  for src, edges in g.items():
     for dst in edges:
       union (m, src, dst)
 
   gg = {}
-  for src, edges in g.iteritems():
+  for src, edges in g.items():
     src2 = find(m, src)
     gg2 = gg.pop(src2, {})
     gg2[src] = g[src]
     gg[src2] = gg2
 
-  return gg.values()
+  return list(gg.values())
 
 
 # node_format_string computes the string used to describe a node: By
@@ -1281,7 +1281,7 @@ def node_format_string (x, ga):
       shape = 'circle'
   else:
     if not x in ga.gcNodes:
-      print x, "not found in gcNodes!"
+      print(x, "not found in gcNodes!")
       exit(-1)
     if x in ga.garbage:
       shape = 'box' # 'invtriangle'
@@ -1306,7 +1306,7 @@ def gnodes (g):
 # Analyze a graph of size 1.
 
 def analyze_1_graph (x, solo_graphs, ga):
-  z = x.keys()[0]
+  z = list(x.keys())[0]
   p = (len(x[z]), node_format_string (z, ga))
   l = solo_graphs.pop(p, [])
   l.append(x)
@@ -1318,7 +1318,7 @@ def set_to_type_list (s, ga):
   l = []
   for x in s:
     l.append(x)
-  l = map(lambda x: node_format_string (x, ga), l)
+  l = [node_format_string (x, ga) for x in l]
   l.sort()
   return tuple(l)
 
@@ -1446,7 +1446,7 @@ def node_count_label_string (x, count, ga):
 def print_graph (outf, g, ga):
   allNodes = graph_nodes(g)
 
-  for src, edges in g.iteritems():
+  for src, edges in g.items():
     for dst in edges:
       if options.edge_labels and src in ga.edgeLabels \
             and dst in ga.edgeLabels[src]:
@@ -1466,37 +1466,37 @@ def print_graph (outf, g, ga):
 
 # print out dot representations of the single node graphs
 def print_solo_graphs(outf, solo_graphs, ga):
-  for p, x in solo_graphs.iteritems():
+  for p, x in solo_graphs.items():
     if print_all_singletons:
       for y in x:
         print_graph(outf, y, ga)
     else:
       if should_print_graph(x[0], ga, len(x)):
         print_graph(outf, x[0], ga)
-        n = x[0].keys()[0]
+        n = list(x[0].keys())[0]
         outf.write('  q{0} [label="{1}"];\n'.format(n, node_count_label_string(n, len(x), ga)))
 
 
 # print out dot representations of two node graphs
 def print_pair_graphs (outf, pair_graphs, ga):
-  for p, l in pair_graphs.iteritems():
+  for p, l in pair_graphs.items():
     if should_print_graph(l[0], ga, len(l)):
       if print_all_pairs:
         for x in l:
           print_graph(outf, x, ga)
       else:
         print_graph(outf, l[0], ga)
-        if len(l[0][l[0].keys()[0]]) != 0:
-          hd = l[0].keys()[0]
+        if len(l[0][list(l[0].keys())[0]]) != 0:
+          hd = list(l[0].keys())[0]
         else:
-          hd = l[0].keys()[1]
+          hd = list(l[0].keys())[1]
         le = len(l)
         if le != 1:
           outf.write('  q{0} [label="{1}"];\n'.format(hd, node_count_label_string(hd, le, ga)))
 
 # print out dot representations of three node graphs
 def print_tri_graphs (outf, tri_graphs, ga):
-  for p, l in tri_graphs.iteritems():
+  for p, l in tri_graphs.items():
     if should_print_graph(l[0], ga, len(l)):
       if print_all_tris:
         for x in l:
@@ -1513,14 +1513,14 @@ def print_tri_graphs (outf, tri_graphs, ga):
 
 # assume g is a death star
 def death_star_head (g):
-  for x, e in g.iteritems():
+  for x, e in g.items():
     if len(e) == 10:
       return x
   assert(False)
 
 
 def print_death_stars (outf, death_stars, ga):
-  for k, ds in death_stars.iteritems():
+  for k, ds in death_stars.items():
     if should_print_graph(ds[0], ga, len(ds)):
       print_graph(outf, ds[0], ga)
       # only add a count label if the count isn't 1
@@ -1537,7 +1537,7 @@ def print_death_stars (outf, death_stars, ga):
 if False:
   ng = {}
   nsl = 0
-  for x, edges in g.iteritems():
+  for x, edges in g.items():
     if x in ga.black_gced:
       nedges = set([])
       for e in edges:
@@ -1549,7 +1549,7 @@ if False:
       nedges = edges
     ng[x] = nedges
 
-  print 'removed', nsl, 'self-loops from JS objects'
+  print('removed', nsl, 'self-loops from JS objects')
 
   g = ng
 
@@ -1561,11 +1561,11 @@ if COMPUTE_ACYCLIC:
 
   #acycnodes = get_rank_0(g)
   if REMOVE_ACYCLIC:
-    print 'removing acyclic nodes'
+    print('removing acyclic nodes')
     g = remove_nodes(g, acycnodes)
     # can't just remove the calculated nodes with dfs3
   else:
-    print 'marking acyclic nodes'
+    print('marking acyclic nodes')
     ga = ga._replace(shadies = ga.shadies | acycnodes)
 
   if False:
@@ -1578,12 +1578,12 @@ if COMPUTE_ACYCLIC:
         cyc_counts[ga.node_names[x]] = (a+1, b)
       else:
         cyc_counts[ga.node_names[x]] = (a, b+1)
-    for x, (v, w) in cyc_counts.iteritems():
+    for x, (v, w) in cyc_counts.items():
       if not x in careAbout:
         continue
       if True: #v + w > 50:
-        print '%(perc)3d%% %(cl)s (out of %(tot)d)' % \
-            {"perc":(100 * v / (v + w)), "ac":v, "tot":v+w, "cl" : x}
+        print('%(perc)3d%% %(cl)s (out of %(tot)d)' % \
+            {"perc":(100 * v / (v + w)), "ac":v, "tot":v+w, "cl" : x})
 
 
 # don't remove acyclic nodes after this, as we must keep around the graph residue
@@ -1622,15 +1622,15 @@ def generic_remover (g, pred, desc):
   nn = set([])
   count = 0
 
-  for x in g.keys():
+  for x in list(g.keys()):
     if pred(x):
       nn.add(x)
       del g[x]
       count += 1
 
-  print 'Removed', count, desc
+  print('Removed', count, desc)
 
-  for x in g.keys():
+  for x in list(g.keys()):
     g[x] = g[x] - nn
 
 
@@ -1684,7 +1684,7 @@ def prune_non_js_border (g, ga):
 
 def prune_marked_js (g, ga):
   s = set([])
-  for x, marked in ga.gcNodes.iteritems():
+  for x, marked in ga.gcNodes.items():
     if marked:
       s.add(x)
 
@@ -1714,7 +1714,7 @@ def prune_info_parent_edges (g, ga):
   gpCount = 0
   momCount = 0
 
-  for x in g.keys():
+  for x in list(g.keys()):
     for e in list(g[x]):
       ename = ga.edgeLabels[x].get(e, [''])[0]
       if ename == 'mNodeInfo':
@@ -1733,7 +1733,7 @@ def prune_info_parent_edges (g, ga):
       #if ename == 'type_proto':
       #  g[x].remove(e)
 
-  print 'Removed', niCount, 'nsNodeInfo,', gpCount, 'GetParent(), and', momCount, 'mOwnerManager edges.'
+  print('Removed', niCount, 'nsNodeInfo,', gpCount, 'GetParent(), and', momCount, 'mOwnerManager edges.')
 
 
 # compute the set of GCed nodes that don't reach RCed nodes.
@@ -1807,7 +1807,7 @@ label_color = { #'nsJSEventListener':'purple',
 
 def make_colors_from_labels (nodeLabels):
   colors = {}
-  for x, lbl in nodeLabels.iteritems():
+  for x, lbl in nodeLabels.items():
     if lbl in label_color:
       colors[x] = label_color[lbl]
 #    elif lbl.startswith('nsGenericElement (XUL)'):
@@ -1840,7 +1840,7 @@ def make_colors (ga):
 def make_draw_attribs (ga, res):
   roots = set([])
 
-  for x, marked in ga.gcNodes.iteritems():
+  for x, marked in ga.gcNodes.items():
     if marked:
       roots.add(x)
 
@@ -1874,7 +1874,7 @@ def split_neighbor (g, ga, name, k):
   visited = set(visited.keys())
 
   # remove other objects
-  for n in g.keys():
+  for n in list(g.keys()):
     if n in visited:
       g[n] = g[n] & visited
     else:
@@ -1899,7 +1899,7 @@ def merge_from_file(g, fname):
 
   # merge nodes
   g2 = {}
-  for src, edges in g.iteritems():
+  for src, edges in g.items():
     src2 = merges.get(src, src)
     if not src2 in g2:
       g2[src2] = set([])
@@ -1917,7 +1917,7 @@ def loadGraph(fname):
   #sys.stdout.flush()
   g = parse_cc_graph.toSinglegraph(g)
   ga = make_draw_attribs (ga, res)
-  print 'Done loading graph.'
+  print('Done loading graph.')
   return (g, ga, res)
 
 
@@ -1968,7 +1968,7 @@ outf = open(file_name + '.dot', 'w')
 # print out stats at the start of a file
 
 outf.write('// ')
-for x, v in sorted(size_counts.iteritems()):
+for x, v in sorted(size_counts.items()):
   outf.write('{0}={1}({2}), '.format(x, v, x * v))
 outf.write('\n')
 
@@ -2006,7 +2006,7 @@ print_tri_graphs(outf, tri_graphs, ga)
 print_death_stars(outf, death_stars, ga)
 
 if options.merge_js:
-  for x, count in mergies.iteritems():
+  for x, count in mergies.items():
     if count > 10:
       outf.write('  q{0} [label="{1}", shape=square, color=red];'.format(x, count))
 

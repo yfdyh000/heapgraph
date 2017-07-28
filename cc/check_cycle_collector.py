@@ -7,7 +7,7 @@
 import sys
 from optparse import OptionParser
 from collections import namedtuple
-import parse_cc_graph
+from . import parse_cc_graph
 
 # CCC: Cycle collector checker.
 #
@@ -45,8 +45,8 @@ options, args = parser.parse_args()
 def computeInternalCounts (g, ga):
   ics = {}
 
-  for src, edges in g.iteritems():
-    for dst, count in edges.iteritems():
+  for src, edges in g.items():
+    for dst, count in edges.items():
       if dst in ga.rcNodes:
         ics[dst] = ics.get(dst, 0) + count
 
@@ -57,12 +57,12 @@ def computeInternalCounts (g, ga):
 def computeRefCountedRoots (ga, ics):
   roots = set([])
 
-  for x, rc in ga.rcNodes.iteritems():
+  for x, rc in ga.rcNodes.items():
     ic = ics.get(x, 0)
     if rc > ic:
       roots.add(x)
     elif ic > rc:
-      print 'Error: computed internal count of', x, 'greater than supplied reference count.'
+      print('Error: computed internal count of', x, 'greater than supplied reference count.')
       exit(-1)
 
   return roots
@@ -74,7 +74,7 @@ def reachableFromRoots (g, ga, rcRoots):
   def floodLive (x):
     live.add(x)
     assert(x in g)
-    for y in g[x].keys():
+    for y in list(g[x].keys()):
       if not y in live:
         floodLive(y)
 
@@ -84,7 +84,7 @@ def reachableFromRoots (g, ga, rcRoots):
       floodLive(x)
 
   # flood from garbage collected roots
-  for x, marked in ga.gcNodes.iteritems():
+  for x, marked in ga.gcNodes.items():
     if marked and not x in live:
       floodLive(x)
 
@@ -109,7 +109,7 @@ def cycleCollect (g, ga):
 
 def graphRange (g):
   r = set([])
-  for edges in g.values():
+  for edges in list(g.values()):
     r |= set(edges.keys())
   return r
 
@@ -121,15 +121,15 @@ def checkGraph (g, ga):
 
   # no nodes can be both RC and GC
   if (rcs & gcs) != set([]):
-    print 'Some nodes are both ref counted and gced:',
+    print('Some nodes are both ref counted and gced:', end=' ')
     for x in rcs & gcs:
-      print x
+      print(x)
     exit(-1)
 
   # all ref counts must be non-zero positive integers
-  for v in ga.rcNodes.values():
+  for v in list(ga.rcNodes.values()):
     if v <= 0:
-      print 'Found a negative or zero ref count.'
+      print('Found a negative or zero ref count.')
       exit(-1)
 
   # all GC nodes map to either True or False
@@ -139,7 +139,7 @@ def checkGraph (g, ga):
 
   # everything in the graph range is in the domain
   if graphRange(g) - gd != set([]):
-    print '\nError: nodes in graph range but not domain:', graphRange(g) - gd
+    print('\nError: nodes in graph range but not domain:', graphRange(g) - gd)
     exit(-1)
   # all nodes are either ref counted or GCed
   assert(gd == rcs | gcs)
@@ -147,71 +147,72 @@ def checkGraph (g, ga):
   # Nothing related to labels is checked.
 
 
-def checkResults (g, ga, (knownEdgesFx, garbageFx), r1Name,
-                         (knownEdgesPy, garbagePy), r2Name):
+def checkResults (g, ga, xxx_todo_changeme, r1Name, xxx_todo_changeme1, r2Name):
+  (knownEdgesFx, garbageFx) = xxx_todo_changeme
+  (knownEdgesPy, garbagePy) = xxx_todo_changeme1
   resultsOk = True
 
   # check that calculated garbage is identical
   if garbageFx != garbagePy:
-    print
+    print()
     resultsOk = False
     s1 = garbageFx - garbagePy
     for x in s1:
-      print '  Error:', x, 'was reported as garbage by ' + r1Name + ' but not ' + r2Name
+      print('  Error:', x, 'was reported as garbage by ' + r1Name + ' but not ' + r2Name)
       foundAnyBad = True
     s2 = garbagePy - garbageFx
     for x in s2:
-      print '  Error:', x, 'was reported as garbage by ' + r1Name + ' but not ' + r2Name
+      print('  Error:', x, 'was reported as garbage by ' + r1Name + ' but not ' + r2Name)
       foundAnyBad = True
     assert(s1 != set([]) or s2 != set([]))
 
   # check that roots and known edges match up
   if knownEdgesFx != knownEdgesPy:
     if resultsOk:
-      print
+      print()
     resultsOk = False
-    for x in g.keys():
+    for x in list(g.keys()):
       if x in knownEdgesFx:
         if not x in knownEdgesPy:
-          print '  Error:', x, 'had known edges reported, but ' + r2Name + ' did not think it was a root.'
+          print('  Error:', x, 'had known edges reported, but ' + r2Name + ' did not think it was a root.')
         else:
           if knownEdgesFx[x] != knownEdgesPy[x]:
             sys.stdout.write ('  Error: results disagree on internal count for {0} (computed {1}, reported {2})\n'.format\
                                 (x, knownEdgesPy[x], knownEdgesFx[x]))
       else:
         if x in knownEdgesPy:
-          print '  Error:', x, 'in ' + r2Name + ' root set, but not ' + r1Name + ' root set.'
+          print('  Error:', x, 'in ' + r2Name + ' root set, but not ' + r1Name + ' root set.')
 
   return resultsOk
 
 
 
 def parseAndCheckResults(fname):
-  print 'Checking ' + fname + '.',
+  print('Checking ' + fname + '.', end=' ')
 
-  print 'Parsing.',
+  print('Parsing.', end=' ')
   sys.stdout.flush()
   pef = parse_cc_graph.parseCCEdgeFile(fname)
   g = pef[0]
   ga = pef[1]
   resFx = pef[2]
 
-  print 'Checking graph.',
+  print('Checking graph.', end=' ')
   sys.stdout.flush()
   checkGraph(g, ga)
 
-  print 'Running PyCC.',
+  print('Running PyCC.', end=' ')
   sys.stdout.flush()
   resPy = cycleCollect(g, ga)
 
-  print 'Comparing results.',
+  print('Comparing results.', end=' ')
   sys.stdout.flush()
   ok = checkResults (g, ga, resFx, 'Firefox cycle collector',
                             resPy, 'Python cycle collector')
   if ok:
-    print 'Ok.'
+    print('Ok.')
   else:
-    print 'Error.'
+    print('Error.')
     exit(-1)
 
   return ok
@@ -225,6 +226,6 @@ for fname in args:
   allOk &= parseAndCheckResults(fname)
 
 if allOk:
-  print 'All files were okay.'
+  print('All files were okay.')
 else:
-  print 'Error: One or more files failed checking.'
+  print('Error: One or more files failed checking.')

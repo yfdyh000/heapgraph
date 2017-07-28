@@ -149,12 +149,12 @@ class ParseTree:
     def print_tree(self, indent=''):
         if self.data:
             for d in self.data:
-                print indent + str(d)[:trim_print_line_to]
+                print(indent + str(d)[:trim_print_line_to])
         for (name, t) in self.subtrees:
-            print indent + name
+            print(indent + name)
             t.print_tree(indent + '  ')
             if len(indent) == 0:
-                print
+                print()
 
 
 # Create a ParseTree from a file.
@@ -287,7 +287,7 @@ if __name__ == "__main__":
         sys.stderr.write('Not enough arguments.\n')
         exit()
 
-    print load_diff_info(sys.argv[1])
+    print(load_diff_info(sys.argv[1]))
     #print load_live_graph_info(sys.argv[1])[20].frames
 
 

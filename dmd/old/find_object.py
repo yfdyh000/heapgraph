@@ -41,7 +41,7 @@ frame_pattern = re.compile(frame_regexp)
 
 def print_trace_segment(args, traces, block, depth):
     for l in traces[block][:depth]:
-        print ' ', l[:args.stack_frame_length]
+        print(' ', l[:args.stack_frame_length])
 
 def analyzeLogs():
     args = parser.parse_args()
@@ -51,12 +51,12 @@ def analyzeLogs():
     [traces, req_sizes] = parse_traces.parse_stack_file(args.stack_trace_file_name)
 
     if not args.size:
-        print 'Expected --size argument'
+        print('Expected --size argument')
         exit(-1)
 
     block_matches = []
 
-    for b, tr in traces.iteritems():
+    for b, tr in traces.items():
         if args.size == req_sizes[b]:
             which_frame = 0
             for f in tr:
@@ -71,9 +71,9 @@ def analyzeLogs():
     for [which_frame, b] in block_matches:
         if which_frame > args.max_stack_depth:
             break
-        print 'block:', b
+        print('block:', b)
         print_trace_segment(args, traces, b, which_frame)
-        print
+        print()
 
 if __name__ == "__main__":
     analyzeLogs()

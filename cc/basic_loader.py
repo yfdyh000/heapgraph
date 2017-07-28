@@ -6,7 +6,7 @@
 
 import sys
 from collections import namedtuple
-import parse_cc_graph
+from . import parse_cc_graph
 from optparse import OptionParser
 
 

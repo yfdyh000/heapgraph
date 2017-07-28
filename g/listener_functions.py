@@ -8,7 +8,7 @@
 # Find functions used as listeners.
 
 import sys
-import parse_gc_graph
+from . import parse_gc_graph
 
 
 def loadListeners(f, listenerRoots):
@@ -29,11 +29,11 @@ def loadListeners(f, listenerRoots):
                 lbl = nm.group(3)
                 labels[lbl] = labels.setdefault(lbl, 0) + 1
 
-    print 'Found {} gray listeners and {} black listeners'.format(numGrayListeners, numBlackListeners)
+    print('Found {} gray listeners and {} black listeners'.format(numGrayListeners, numBlackListeners))
 
-    for l, count in labels.iteritems():
+    for l, count in labels.items():
         if count > 100:
-            print '{:5} {}'.format(count, l)
+            print('{:5} {}'.format(count, l))
 
 
 
@@ -43,14 +43,14 @@ def findListeners (fname):
   try:
     f = open(fname, 'r')
   except:
-    print 'Error opening file', fname
+    print('Error opening file', fname)
     exit(-1)
 
   # Load the roots.
   [roots, rootLabels] = parse_gc_graph.parseRoots(f)
 
   listenerRoots = set([])
-  for r, l in rootLabels.iteritems():
+  for r, l in rootLabels.items():
       if l.startswith('nsXPCWrappedJS[nsIDOMEventListener'):
           listenerRoots.add(r)
   roots = None
@@ -70,7 +70,7 @@ def findListeners (fname):
 
 
 if len(sys.argv) < 2:
-    print 'Not enough arguments.'
+    print('Not enough arguments.')
     exit()
 
 findListeners(sys.argv[1])

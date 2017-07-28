@@ -7,8 +7,8 @@
 import sys
 import re
 from collections import namedtuple
-import parse_cc_graph
-import fast_parse_cc_graph
+from . import parse_cc_graph
+from . import fast_parse_cc_graph
 
 
 # which classes (or maybe even specific objects) hold into a particular class of objects?
@@ -39,25 +39,25 @@ def get_holders (g, ga, garb, name):
     if name == ga.nodeLabels[n]:
       children.add(n)
 
-  print 'Num children found:', len(children)
+  print('Num children found:', len(children))
 
   parents = {}
 
-  for n, e in g.iteritems():
+  for n, e in g.items():
     overlap = e & children
     if len(overlap) != 0:
       l = canonicalize_name(ga.nodeLabels[n])
       parents[l] = parents.get(l, 0) + len(overlap)
 
   other = 0
-  for l, n in parents.iteritems():
+  for l, n in parents.items():
     if n > 0:
-      print '%(num)8d %(label)s' % {'num':n, 'label':l}
+      print('%(num)8d %(label)s' % {'num':n, 'label':l})
     else:
       other += n
 
   if other != 0:
-    print '%(num)8d other' % {'num':other}
+    print('%(num)8d other' % {'num':other})
 
 
 def loadGraph(fname):

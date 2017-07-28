@@ -7,7 +7,7 @@
 import sys
 import re
 from collections import namedtuple
-import parse_cc_graph
+from . import parse_cc_graph
 
 
 def node_string (x, ga):
@@ -34,18 +34,18 @@ def edge_string (dst, olbl, lbl):
 
 
 def print_reverse_graph (g, ga):
-  for src, outs in g.iteritems():
-    print node_string(src, ga)
-    for dst, numEdges in outs.iteritems():
+  for src, outs in g.items():
+    print(node_string(src, ga))
+    for dst, numEdges in outs.items():
       if (dst, src) in ga.edgeLabels:
         for ll in ga.edgeLabels[(dst, src)]:
-          print edge_string (dst, ll[0], ll[1])
+          print(edge_string (dst, ll[0], ll[1]))
         numEdges -= len(ga.edgeLabels[(dst, src)])
       for x in range(numEdges):
-        print edge_string (dst, None, None)
+        print(edge_string (dst, None, None))
 
 if len(sys.argv) < 2:
-  print 'Not enough arguments.'
+  print('Not enough arguments.')
   exit()
 
 

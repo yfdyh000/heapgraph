@@ -89,7 +89,7 @@ def parseRoots (f):
     elif l == "==========\n":
       break;
     else:
-      print "Error: unknown line ", l
+      print("Error: unknown line ", l)
       exit(-1)
 
   return [roots, rootLabels]
@@ -133,7 +133,7 @@ def parseGraph (f):
         currNode = nm.group(1)
         addNode(currNode, nm.group(2), nm.group(3))
       else:
-        print 'Error: Unknown line:', l[:-1]
+        print('Error: Unknown line:', l[:-1])
 
   # yar, should pass the root crud in and wedge it in here, or somewhere
   return [edges, edgeLabels, nodeLabels, compartments]
@@ -143,7 +143,7 @@ def parseGCEdgeFile (fname):
   try:
     f = open(fname, 'r')
   except:
-    print 'Error opening file', fname
+    print('Error opening file', fname)
     exit(-1)
 
   parseCompartments(f)
@@ -160,9 +160,9 @@ def parseGCEdgeFile (fname):
 # from a source node to a set of its destinations.
 def toSinglegraph (gm):
   g = {}
-  for src, dsts in gm.iteritems():
+  for src, dsts in gm.items():
     d = set([])
-    for dst, k in dsts.iteritems():
+    for dst, k in dsts.items():
       d.add(dst)
     g[src] = d
   return g
@@ -170,49 +170,49 @@ def toSinglegraph (gm):
 
 def reverseMultigraph (gm):
   gm2 = {}
-  for src, dsts in gm.iteritems():
+  for src, dsts in gm.items():
     if not src in gm2:
       gm2[src] = {}
-    for dst, k in dsts.iteritems():
+    for dst, k in dsts.items():
       gm2.setdefault(dst, {})[src] = k
   return gm2
 
 
 def printGraph(g, ga):
-  for x, edges in g.iteritems():
+  for x, edges in g.items():
     if x in ga.roots:
       sys.stdout.write('R {0}: '.format(x))
     else:
       sys.stdout.write('  {0}: '.format(x))
-    for e, k in edges.iteritems():
+    for e, k in edges.items():
       for n in range(k):
         sys.stdout.write('{0}, '.format(e))
-    print
+    print()
 
 def printAttribs(ga):
-  print 'Roots: ',
+  print('Roots: ', end=' ')
   for x in ga.roots:
     sys.stdout.write('{0}, '.format(x))
-  print
+  print()
   return;
 
-  print 'Node labels: ',
-  for x, l in ga.nodeLabels.iteritems():
+  print('Node labels: ', end=' ')
+  for x, l in ga.nodeLabels.items():
     sys.stdout.write('{0}:{1}, '.format(x, l))
-  print
+  print()
 
-  print 'Edge labels: ',
-  for src, edges in ga.edgeLabels.iteritems():
-    for dst, l in edges.iteritems():
+  print('Edge labels: ', end=' ')
+  for src, edges in ga.edgeLabels.items():
+    for dst, l in edges.items():
       sys.stdout.write('{0}->{1}:{2}, '.format(src, dst, l))
-  print
+  print()
 
 
 if False:
   # A few simple tests
 
   if len(sys.argv) < 2:
-    print 'Not enough arguments.'
+    print('Not enough arguments.')
     exit()
 
   #import cProfile

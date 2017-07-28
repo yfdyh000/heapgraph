@@ -41,18 +41,18 @@ def scooper (f, name):
 
   buckets = {}
 
-  for l, k in counts.iteritems():
+  for l, k in counts.items():
     if k > 1:
-      print '%(num)8d %(label)s' % {'num':k, 'label':l}
+      print('%(num)8d %(label)s' % {'num':k, 'label':l})
       buckets[k] = buckets.get(k, 0) + 1
 
-  print buckets
+  print(buckets)
 
 
 try:
   f = open(sys.argv[1], 'r')
 except:
-  print 'Error opening file', sys.argv[1]
+  print('Error opening file', sys.argv[1])
   exit(-1)
 
 scooper(f, sys.argv[2])

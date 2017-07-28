@@ -6,7 +6,7 @@
 
 import argparse
 import collections
-import parse_cc_graph
+from . import parse_cc_graph
 
 
 parser = argparse.ArgumentParser(description='Find objects with more references than their refcount')
@@ -19,18 +19,18 @@ args = parser.parse_args()
 
 
 knownReferences = collections.defaultdict(lambda: 0)
-for x, edges in g.iteritems():
+for x, edges in g.items():
     if not x in ga.rcNodes:
         continue
-    for y, count in edges.iteritems():
+    for y, count in edges.items():
         knownReferences[y] += count
 
 
-for x in g.keys():
+for x in list(g.keys()):
     if not x in ga.rcNodes:
         continue
     if knownReferences[x] > ga.rcNodes[x]:
-        print 'Bad node {0} found (rc={1}, known={2})'.format(x, ga.rcNodes[x], knownReferences[x])
+        print('Bad node {0} found (rc={1}, known={2})'.format(x, ga.rcNodes[x], knownReferences[x]))
         exit(-1)
 
 

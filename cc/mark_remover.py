@@ -68,7 +68,7 @@ def echoNonMarkedNodes (f, markedNodes):
         sys.stdout.write(l)
         break
       else:
-        print 'Error: Unknown line:', l[:-1]
+        print('Error: Unknown line:', l[:-1])
   
 
 
@@ -94,9 +94,9 @@ def parseResults (f):
           assert (not obj in knownEdges)
           knownEdges[obj] = int(km.group(1))
         else:
-          print 'Error: Unknown result entry type:', tag
+          print('Error: Unknown result entry type:', tag)
     else:
-      print 'Error: Unknown result entry:', l[:-1]
+      print('Error: Unknown result entry:', l[:-1])
 
   return (knownEdges, garbage)
 
@@ -105,7 +105,7 @@ def parseCCEdgeFile (fname):
   try:
     f = open(fname, 'r')
   except:
-    print 'Error opening file', fname
+    print('Error opening file', fname)
     exit(-1)
 
   markedNodes = getMarkedNodes (f)
@@ -114,7 +114,7 @@ def parseCCEdgeFile (fname):
   try:
     f = open(fname, 'r')
   except:
-    print 'Error opening file', fname
+    print('Error opening file', fname)
     exit(-1)
 
   echoNonMarkedNodes(f, markedNodes)
@@ -127,9 +127,9 @@ def parseCCEdgeFile (fname):
 # from a source node to a set of its destinations.
 def toSinglegraph (gm):
   g = {}
-  for src, dsts in gm.iteritems():
+  for src, dsts in gm.items():
     d = set([])
-    for dst, k in dsts.iteritems():
+    for dst, k in dsts.items():
       d.add(dst)
     g[src] = d
   return g
@@ -137,16 +137,16 @@ def toSinglegraph (gm):
 
 def reverseMultigraph (gm):
   gm2 = {}
-  for src, dsts in gm.iteritems():
+  for src, dsts in gm.items():
     if not src in gm2:
       gm2[src] = {}
-    for dst, k in dsts.iteritems():
+    for dst, k in dsts.items():
       gm2.setdefault(dst, {})[src] = k
   return gm2
 
 
 if len(sys.argv) < 2:
-  print 'Not enough arguments.'
+  print('Not enough arguments.')
   exit()
 
 parseCCEdgeFile(sys.argv[1])

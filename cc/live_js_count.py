@@ -6,7 +6,7 @@
 
 import sys
 from collections import namedtuple
-import parse_cc_graph
+from . import parse_cc_graph
 from optparse import OptionParser
 
 
@@ -29,11 +29,11 @@ def live_js(g, ga):
   holders = set([])
   dummy = [""]
 
-  for src, edges in g.iteritems():
+  for src, edges in g.items():
     if src in ga.rcNodes:
       if len(edges) != 1:
         continue
-      for dst, n in edges.iteritems():
+      for dst, n in edges.items():
         if n != 1:
           continue
         if ga.edgeLabels[src].get(dst, dummy)[0] != "Preserved wrapper":
@@ -49,7 +49,7 @@ def live_js(g, ga):
           live.add(dst)
           holders.add(src)
 
-  print "Found", len(live), "JS objects held directly by live C++."
+  print("Found", len(live), "JS objects held directly by live C++.")
 
   return (holders, live)
 
@@ -61,15 +61,15 @@ def class_based_live_js(g, ga):
   holders = set([])
   class_name = "JSContext"
 
-  for src, edges in g.iteritems():
+  for src, edges in g.items():
     if src in ga.rcNodes:
       if ga.nodeLabels[src].startswith(class_name):
         holders.add(src)
-        for dst, n in edges.iteritems():
+        for dst, n in edges.items():
           if dst in ga.gcNodes and not ga.gcNodes[dst]:
             live.add(dst)
 
-  print "Found", len(live), "JS objects held directly by class", class_name
+  print("Found", len(live), "JS objects held directly by class", class_name)
 
   return (holders, live)
 
@@ -83,7 +83,7 @@ def flood_from (g, ga, holders, live):
         marked.add(y)
         flood_from_rec(y)
       if y in ga.rcNodes and not y in holders:
-        print "reached: ", ga.nodeLabels[y], "\t", y
+        print("reached: ", ga.nodeLabels[y], "\t", y)
 
   for x in live:
     assert(x in ga.gcNodes)
@@ -92,7 +92,7 @@ def flood_from (g, ga, holders, live):
       marked.add(x)
       flood_from_rec(x)
 
-  print "Found", len(marked), "JS objects held directly or indirectly by live C++."
+  print("Found", len(marked), "JS objects held directly or indirectly by live C++.")
 
   return marked
 
@@ -102,7 +102,7 @@ def unlive (g, ga, live):
   for x in g:
     if not x in live and x in ga.gcNodes:
       unlive += 1
-  print "Found", unlive, "other JS objects."
+  print("Found", unlive, "other JS objects.")
 
 
 

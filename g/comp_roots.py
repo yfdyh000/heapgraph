@@ -6,7 +6,7 @@
 
 import sys
 from collections import namedtuple
-import comp_parse_gc_graph
+from . import comp_parse_gc_graph
 import argparse
 
 
@@ -86,7 +86,7 @@ def print_edge (ga, x, y):
 
 
 def explain_root (ga, root):
-  print "via", ga.rootLabels[root], ":"
+  print("via", ga.rootLabels[root], ":")
 
 # print out the path to an object that has been discovered
 def print_path (revg, ga, roots, x, path):
@@ -101,8 +101,8 @@ def print_path (revg, ga, roots, x, path):
     print_edge(ga, p[0], p[1])
     sys.stdout.write(' ')
   print_node(ga, x)
-  print
-  print
+  print()
+  print()
 
 
 # look for roots and print out the paths to the given object
@@ -138,18 +138,18 @@ def findRoots (revg, ga, roots, x):
   findRootsDFS(x)
 
   if not anyFound[0]:
-    print 'No roots found.'
+    print('No roots found.')
 
 
 def reverseGraph (g):
   g2 = {}
-  print 'Reversing graph.',
+  print('Reversing graph.', end=' ')
   sys.stdout.flush()
-  for src, dsts in g.iteritems():
+  for src, dsts in g.items():
     for d in dsts:
       g2.setdefault(d, set([])).add(src)
-  print 'Done.'
-  print
+  print('Done.')
+  print()
   return g2
 
 def loadGraph(fname):
@@ -159,7 +159,7 @@ def loadGraph(fname):
   #sys.stdout.write ('Converting to single graph. ') 
   #sys.stdout.flush()
   g = comp_parse_gc_graph.toSinglegraph(g)
-  print 'Done loading graph.',
+  print('Done loading graph.', end=' ')
 
   return (g, ga)
 
@@ -179,33 +179,33 @@ if False:
   exit(0)
 
 
-print
-print "Looking for compartment", my_compartment
+print()
+print("Looking for compartment", my_compartment)
 
 num_roots = 0
 
 if True:
-  print "Checking for direct root references to the compartment."
+  print("Checking for direct root references to the compartment.")
 
   for x in roots:
     if ga.compartments[x] == my_compartment:
       print_node(ga, x)
       sys.stdout.write(' via ' + ga.rootLabels[x] + "\n")
 
-  print
+  print()
 
 
-print "Checking for references from other compartments to the compartment."
+print("Checking for references from other compartments to the compartment.")
 
-for src, dsts in g.iteritems():
+for src, dsts in g.items():
   if ga.compartments[src] != my_compartment:
     for d in dsts:
       if ga.compartments[d] == my_compartment:
         print_node(ga, src)
-        print " from compartment", ga.compartments[src]
-        print "to: ",
+        print(" from compartment", ga.compartments[src])
+        print("to: ", end=' ')
         print_node(ga, d)
-        print
+        print()
         findRoots(revg, ga, roots, src)
 
 

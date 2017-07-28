@@ -28,7 +28,7 @@ def parse_stacks_to_types(f):
         else:
             stack_patterns[-1].append(l[:-1])
 
-    print stack_patterns
+    print(stack_patterns)
 
 def parse_stacks_to_type_file(fname):
     try:

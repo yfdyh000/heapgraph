@@ -30,14 +30,14 @@ def frame_split(frame):
 
 def print_stack_trace(trace):
     for frame in trace:
-        print ' ', frame_split(frame)
+        print(' ', frame_split(frame))
 
 
 def print_diff_entry(size, data):
-    print 'Change in size: {0} bytes. {1}'.format(size,
-                                                  'New stack trace.' if len(data) == 1 else 'Entry increased in size.')
+    print('Change in size: {0} bytes. {1}'.format(size,
+                                                  'New stack trace.' if len(data) == 1 else 'Entry increased in size.'))
     print_stack_trace(data[0][2])
-    print
+    print()
 
 
 def load_traces(file_name):
@@ -52,7 +52,7 @@ def diff_logs(f1, f2):
 
     new_stuff = {}
 
-    for k, data2 in m2.iteritems():
+    for k, data2 in m2.items():
         data1 = m1.get(k, None)
         if data1:
             [num_records1, num_bytes1, _] = data1

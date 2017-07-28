@@ -6,7 +6,7 @@
 
 import sys
 from collections import namedtuple
-import parse_cc_graph
+from . import parse_cc_graph
 from optparse import OptionParser
 
 
@@ -37,15 +37,15 @@ parser = OptionParser(usage=usage)
 options, args = parser.parse_args()
 
 if len(args) != 2:
-  print 'Expected two arguments.'
+  print('Expected two arguments.')
   exit(0)
 
 
 def reverseGraph (g):
   g2 = {}
-  print 'Reversing graph.'
+  print('Reversing graph.')
   sys.stdout.flush()
-  for src, dsts in g.iteritems():
+  for src, dsts in g.items():
     for d in dsts:
       g2.setdefault(d, set([])).add(src)
   return g2
@@ -58,14 +58,14 @@ def loadGraph(fname):
   #sys.stdout.write ('Converting to single graph. ') 
   #sys.stdout.flush()
   g = parse_cc_graph.toSinglegraph(g)
-  print 'Done loading graph.',
+  print('Done loading graph.', end=' ')
 
   return (g, ga, res)
 
 
 def reachableFrom (g, garb, x):
   if not x in garb:
-    print x, "is not garbage"
+    print(x, "is not garbage")
     exit -1
 
   visited = {x:True}
@@ -94,26 +94,26 @@ target = args[1]
 
 (g, ga, res) = loadGraph (file_name)
 
-print
-print "Computing forward direction"
+print()
+print("Computing forward direction")
 
 # garbage objects reachable from target
 forw = reachableFrom(g, res[1], target)
 
-print "Computing backwards direction"
+print("Computing backwards direction")
 
 # garbage objects that reach target
 revg = reverseGraph(g)
 backw = reachableFrom(revg, res[1], target)
 
 # members of garbage cycle including target
-print "Cycle members:", 
+print("Cycle members:", end=' ') 
 cyc = list(forw & backw)
 cyc.sort()
 
 for i in cyc:
-  print i,
-print
+  print(i, end=' ')
+print()
 
 
 

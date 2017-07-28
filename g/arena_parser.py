@@ -39,7 +39,7 @@ def parseZones(f):
             if l == "==========\n":
                 break;
             else:
-                print "Error: unknown line ", l
+                print("Error: unknown line ", l)
                 f.close()
                 exit(-1)
 
@@ -89,7 +89,7 @@ def parseZones(f):
             assert currZone
             assert currArena
             continue
-        print 'Error: unknown line:', l[:-1]
+        print('Error: unknown line:', l[:-1])
         exit(-1)
 
     if currArena:
@@ -104,7 +104,7 @@ def parseArenaFile(fname):
     try:
         f = open(fname, 'r')
     except:
-        print 'Error opening file', fname
+        print('Error opening file', fname)
         exit(-1)
 
     zones = parseZones(f)
@@ -136,11 +136,11 @@ def analyzeArena(a, out):
 def doStuff():
     zones = parseArenaFile('gc-edges.310.log')
 
-    print 'Number of arenas in each zone with a given percentage of unused space, crudely bucketed.'
+    print('Number of arenas in each zone with a given percentage of unused space, crudely bucketed.')
 
     # Do some kind of analysis on the zones.
     for z in zones:
-        print 'zone:', z[0]
+        print('zone:', z[0])
         #print 'comp:', z[1]
 
         out = []
@@ -157,7 +157,7 @@ def doStuff():
             if out[i] > 0:
                 sys.stdout.write('{0}%: {1}, '.format(i, out[i]))
             i -= 1
-        print
+        print()
 
 
 doStuff()

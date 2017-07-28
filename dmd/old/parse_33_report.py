@@ -74,7 +74,7 @@ def filter_record_header(l):
     tlm = third_line_patt.match(l)
     if tlm:
         return None
-    print 'BAD LINE', l
+    print('BAD LINE', l)
     exit(-1)
 
 
@@ -169,7 +169,7 @@ if __name__ == "__main__":
         sys.stderr.write('Not enough arguments.\n')
         exit()
 
-    print parse_stack_file(sys.argv[1])
+    print(parse_stack_file(sys.argv[1]))
 
 
 

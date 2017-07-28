@@ -49,9 +49,9 @@ def parse_block_graph_file(fname, set_edges):
 def compute_size(r):
     [block_lens, block_edges] = r
     total_words = 0
-    for b, e in block_edges.iteritems():
+    for b, e in block_edges.items():
         total_words += 2 + len(e)
-    print total_words * 8
+    print(total_words * 8)
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:

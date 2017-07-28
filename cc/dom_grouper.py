@@ -9,7 +9,7 @@
 
 import sys
 import re
-import parse_cc_graph
+from . import parse_cc_graph
 import argparse
 
 
@@ -68,7 +68,7 @@ def print_grouper_results (counts, rootLabels, docParents, docURLs, garb):
 
   fout = open('counts.log', 'w')
   sys.stderr.write('Printing grouping results to counts.log\n')
-  for x, n in counts.iteritems():
+  for x, n in counts.items():
     print_this = True
     if args.only_orphans and x in docParents:
       print_this = False
@@ -177,7 +177,7 @@ def parseGraph (f):
   # invert the children map
   docParents = {}
 
-  for x, s in docsChildren.iteritems():
+  for x, s in docsChildren.items():
     for y in s:
       assert(not y in docParents)
       docParents[y] = x
@@ -209,11 +209,11 @@ def parseGraph (f):
 
   # print out merging information
   if printMergingInformation:
-    for x, l in trees.iteritems():
-      print x,
+    for x, l in trees.items():
+      print(x, end=' ')
       for y in l:
-        print y,
-      print
+        print(y, end=' ')
+      print()
 
   return trees
 
@@ -223,7 +223,7 @@ def mergeDOMParents (f, trees):
 
   # compute direct DOM merge map
   merge = {}
-  for x, l in trees.iteritems():
+  for x, l in trees.items():
     for y in l:
       merge[y] = x
 
@@ -296,16 +296,16 @@ def mergeDOMParents (f, trees):
           sys.stderr.write('Error: Unknown line in mergeDOMParents: ' + l[:-1] + '\n')
 
   # print out parent merging information
-  for m in parentsOfDOM.values():
-    for l in m.values():
-      print l[0],
+  for m in list(parentsOfDOM.values()):
+    for l in list(m.values()):
+      print(l[0], end=' ')
       for y in l:
-        print y,
-      print
+        print(y, end=' ')
+      print()
 
   # print out child
   elmCounts = 0
-  for x, l in childrenOfDOM.iteritems():
+  for x, l in childrenOfDOM.items():
     foundAny = False
     assert(len(l) != 0)
     if len(l) == 1:
@@ -314,9 +314,9 @@ def mergeDOMParents (f, trees):
       if y in possibleChildren:
         foundAny = True
         elmCounts += 1
-        print y,
+        print(y, end=' ')
     if foundAny:
-      print
+      print()
 
 
 def parseFile (fname):

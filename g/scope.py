@@ -16,7 +16,7 @@ def displayifyMap(baseName, m, maxItems):
   numItems = 0
   ellipsed = False
 
-  for stringType, c in sorted(m.items(), reverse=True, key=lambda (a,b): b):
+  for stringType, c in sorted(list(m.items()), reverse=True, key=lambda a_b: a_b[1]):
     if numItems < maxItems:
       s += "{} {}, ".format(c, stringType)
     elif not ellipsed:
@@ -74,13 +74,13 @@ def parseGraph (f):
       if lbl == "scope name":
         name = strings.get(edge)
         if not name:
-          print "unknown string"
+          print("unknown string")
           exit(-1)
         currNames.append(name)
       elif lbl == "scope env shape":
         continue
       else:
-        print 'Error: Unknown scope edge', lbl
+        print('Error: Unknown scope edge', lbl)
         exit(-1)
       continue
     nm = nodePatt.match(l)
@@ -120,13 +120,13 @@ def parseGraph (f):
       # Skip over comments.
       continue
     else:
-      print 'Error: Unknown line:', l[:-1]
+      print('Error: Unknown line:', l[:-1])
 
   counts = {}
-  for k, v in scopeFunctions.iteritems():
+  for k, v in scopeFunctions.items():
     script = scriptURLs.get(functionScripts.get(v, "UNKNOWN"), "UNKNOWN")
     if script == "resource://gre/modules/ReaderMode.jsm":
-      print k
+      print(k)
     #counts[script] = counts.setdefault(script, 0) + 1
 
   #for k, v in counts.iteritems():
@@ -143,21 +143,21 @@ def parseGraph (f):
 
   exit(0)
   other = 0
-  for k, v in sorted(scopeNames.iteritems(), reverse=True, key=lambda (a,b): a):
+  for k, v in sorted(iter(scopeNames.items()), reverse=True, key=lambda a_b1: a_b1[0]):
     if v < 1:
       other += v
       continue
-    print k, v
+    print(k, v)
 
   if other > 0:
-    print "Other:", other
+    print("Other:", other)
 
 
 def parseGCEdgeFile (fname):
   try:
     f = open(fname, 'r')
   except:
-    print 'Error opening file', fname
+    print('Error opening file', fname)
     exit(-1)
 
   parseRoots(f)
@@ -167,7 +167,7 @@ def parseGCEdgeFile (fname):
 
 
 if len(sys.argv) < 2:
-  print 'Not enough arguments.'
+  print('Not enough arguments.')
   exit()
 
 parseGCEdgeFile(sys.argv[1])
